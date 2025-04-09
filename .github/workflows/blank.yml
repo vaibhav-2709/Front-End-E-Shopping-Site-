@@ -31,9 +31,7 @@ jobs:
         run: echo Hello, world!
 
       # Runs a set of commands using the runners shell
-      - name: Print a secret message
-        run: echo "Hello $MY_SECRET"
-        env:
-          MY_SECRET: ${{ secrets.YOUR_SECRET_NAME }}
-
+      
+      - name: Echo secret
+        run: echo "My secret is ${{ secrets.MY_SECRET }}"
 
