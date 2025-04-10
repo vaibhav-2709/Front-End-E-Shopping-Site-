@@ -10,73 +10,61 @@ git commit -m "Initial commit"
 git remote add origin https://github.com/vaibhav-2709/test.git
 git push -u origin main
 
-name: HTML CI Check
+
+
+
+name: Checkout Code
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  checkout:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇ Checkout Code
+        uses: actions/checkout@v3
+
+      - name: 📁 Show Directory Structure
+        run: ls -R || echo "⚠ Failed to list files"
+
+
+
+
+
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [main]
 
-jobs:
-  validate:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: ⬇️ Checkout Code
-        uses: actions/checkout@v3
-
-      - name: 🧪 Validate HTML
-        uses: Cyb3r-Jak3/html5validator-action@v1
-        with:
-          root: "./"
-
-      - name: 🧪 Validate CSS (Stylelint)
-        uses: stylelint/stylelint-action@v1
-        with:
-          files: '**/*.css'
-
-      - name: ✅ CI Passed
-        if: success()
-        run: echo "✅ All validations passed. Ready to deploy."
-
-      - name: ❌ CI Failed
-        if: failure()
-        run: echo "❌ Validation failed. Fix issues before deployment."
-
-name: Deploy HTML Site
-
-on:
-  workflow_run:
-    workflows: ["HTML CI Check"]
-    types:
-      - completed
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: ⬇️ Checkout Repository
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: ⚙️ Setup Pages
-        uses: actions/configure-pages@v3
-
-      - name: 📦 Upload to GitHub Pages
-        uses: actions/upload-pages-artifact@v2
+      - name: Upload site to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: "."
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
 
       - name: 🚀 Deploy to GitHub Pages
-        uses: actions/deploy-pages@v2
-
-      - name: ✅ Deployment Success
-        if: success()
-        run: echo "🎉 Site successfully deployed to GitHub Pages."
-
-      - name: ❌ Deployment Failed
-        if: failure()
-        run: echo "🚨 Deployment failed! Please check logs."
+        uses: actions/deploy-pages@v4
 
 
 
