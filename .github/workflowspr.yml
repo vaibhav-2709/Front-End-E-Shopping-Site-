@@ -1,0 +1,45 @@
+name: Minikube CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  minikube:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Install dependencies
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y curl conntrack
+
+      # Step 3: Download and install Minikube
+      - name: Install Minikube
+        run: |
+          curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+          sudo install minikube /usr/local/bin/
+          minikube version
+
+      # Step 4: Start Minikube
+      - name: Start Minikube
+        run: |
+          minikube start --driver=none
+          minikube status
+
+      # Step 5: Run Kubernetes tasks
+      - name: Deploy to Minikube
+        run: |
+          kubectl get pods --all-namespaces
+          # Add your Kubernetes commands here
+
+      # Step 6: Stop Minikube
+      - name: Stop Minikube
+        run: |
+          minikube stop
